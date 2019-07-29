@@ -11,14 +11,16 @@ var mouse = {
 
 
 var colors = [
-	'#2185C5',
-	'#7ECEFD',
-	'#FFF6E5',
-	'#FF7F66'
+	'#0C0F0A',
+	'#FF206E',
+	'#FBFF12',
+    '#41EAD4',
+    '#FFFFFF'
 ];
 
-let friction = 0.92;
+let friction = 0.88;
 let gravity = 1;
+
 
 // Event Listeners
 addEventListener("mousemove", function(event) {
@@ -50,24 +52,30 @@ function randomColor(colors) {
 
 // create ball
 
-function Ball(x, y, dy, radius, color){
+function Ball(x, y, dx, dy, radius, color){
     this.x = x;
     this.y = y;
+    this.dx = dx;
     this.dy = dy;
     this.radius = radius;
     this.color = color;
     this.update = function(){
-        if ( this.y + radius > canvas.height ){
+        if ( this.y + this.radius + this.dy > canvas.height ){
             this.dy = -this.dy * friction;
         } else {
             this.dy += gravity;
         }
+
+        if ( this.x + this.radius + this.dx > canvas.width || this.x - this.radius <= 0){
+            this.dx = -this.dx;
+        }
+        this.x += this.dx;
         this.y += this.dy;
         this.draw();
     }
     this.draw = function(){
         c.beginPath();
-        c.arc(this.x, this.y, radius, 0, Math.PI * 2, false);
+        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
         c.fillStyle = this.color;
         c.fill();
         c.stroke();
@@ -79,11 +87,17 @@ let ball;
 let ballArr = [];
 // implementation
 function init(){
-    c.clearRect(0, 0, canvas.width, canvas.height);
-    for( let i = 0; i < 20; i++ ){
-        ballArr.push(new Ball(randomIntFromRange(0, canvas.width), randomIntFromRange(20,canvas.height - 120), 5, randomIntFromRange(2,30), randomColor(colors)));
+    ballArr = [];
+    for( let i = 0; i < 150; i++ ){
+        let radius = randomIntFromRange(2,30);
+        let x = randomIntFromRange(radius, canvas.width - radius);
+        let y = randomIntFromRange(20,canvas.height - radius);
+        let color = randomColor(colors)
+        let dy = 5;
+        let dx = randomIntFromRange(-2, 2);
+        ballArr.push(new Ball(x, y, dx, dy ,radius, color));
     }
-    ball = new Ball(canvas.width / 2, canvas.height / 2, 5, 20, "red");
+    
 
 }
 
